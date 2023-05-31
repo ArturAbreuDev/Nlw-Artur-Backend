@@ -1,3 +1,4 @@
+// server
 // Read the .env file.
 import * as dotenv from 'dotenv'
 
