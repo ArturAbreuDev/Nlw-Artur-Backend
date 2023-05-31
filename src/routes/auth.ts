@@ -8,7 +8,6 @@ export async function authRoutes(app: FastifyInstance) {
     const bodySchema = z.object({
       code: z.string(),
     })
-
     const { code } = bodySchema.parse(request.body)
 
     const accessTokenResponse = await axios.post(
@@ -25,7 +24,6 @@ export async function authRoutes(app: FastifyInstance) {
         },
       },
     )
-
     const { access_token } = accessTokenResponse.data
 
     const userResponse = await axios.get('https://api.github.com/user', {
@@ -43,7 +41,7 @@ export async function authRoutes(app: FastifyInstance) {
 
     const userInfo = userSchema.parse(userResponse.data)
 
-    let user = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         githubId: userInfo.id,
       },
@@ -63,11 +61,11 @@ export async function authRoutes(app: FastifyInstance) {
     const token = app.jwt.sign(
       {
         name: user.name,
-        avatarUrl: user.avatarUrl,
+        avatar_url: user.avatarUrl,
       },
       {
         sub: user.id,
-        expiresIn: '14 days',
+        expiresIn: '30 days',
       },
     )
 
