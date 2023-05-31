@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { FastifyInstance } from 'fastify'
 import axios from 'axios'
 import { z } from 'zod'
