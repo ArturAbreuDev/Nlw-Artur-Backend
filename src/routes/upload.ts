@@ -1,19 +1,20 @@
-import { randomUUID } from 'node:crypto'
-import { resolve, extname } from 'node:path'
+import { randomUUID } from 'crypto'
+import { extname, resolve } from 'path'
 import { FastifyInstance } from 'fastify'
-import { createWriteStream, unlink } from 'node:fs'
-import { pipeline } from 'node:stream'
-import { promisify } from 'node:util'
+import { createWriteStream } from 'fs'
+import { pipeline } from 'stream'
+import { promisify } from 'util'
 
 const pump = promisify(pipeline)
 
 export async function uploadRoutes(app: FastifyInstance) {
-  app.post('/upload', async (request) => {
+  app.post('/upload', async (request, reply) => {
     const upload = await request.file({
       limits: {
-        fileSize: 5_242_880, // 5mb
+        fileSize: 10_485_760, // 10mb
       },
     })
+
     if (!upload) {
       return reply.status(400).send()
     }
@@ -24,15 +25,15 @@ export async function uploadRoutes(app: FastifyInstance) {
     if (!isValidFileFormat) {
       return reply.status(400).send()
     }
+
     const fileId = randomUUID()
     const extension = extname(upload.filename)
     const fileName = fileId.concat(extension)
 
-    // amazon s3, google gcs, cloudflare r2
-
     const writeStream = createWriteStream(
-      resolve(__dirname, '../../uploads/', fileName),
+      resolve(__dirname, '../../uploads', fileName),
     )
+
     await pump(upload.file, writeStream)
 
     const fullUrl = request.protocol.concat('://').concat(request.hostname)
