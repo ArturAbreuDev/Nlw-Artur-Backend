@@ -15,7 +15,7 @@ export function init() {
   })
 
   app.register(cors, {
-    origin: ['https://nlw-artur.vercel.app', 'http://localhost:3000'],
+    origin: true,
   })
 
   app.register(multipart)
